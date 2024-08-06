@@ -1,118 +1,107 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const isPrime = (num) => {
+    if (num < 2) 
+        return false;
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+        if (num % i === 0) 
+            return false;
+    }
+    return true;
+};
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const isFibonacci = (num) => {
+    const isPerfectSquare = (x) => {
+        let s = Math.floor(Math.sqrt(x));
+        return (s * s === x);
+    };
+    return isPerfectSquare(5 * num * num + 4) || isPerfectSquare(5 * num * num - 4);
+};
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const generateNumbers = (rule) => {
+    return Array.from({ length: 100 }, (_, i) => {
+        const num = i + 1;
+        return {
+            value: num,
+            highlight: rule(num),
+        };
+    });
+};
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const App = () => {
+    const [selectedRule, setSelectedRule] = useState('Odd Numbers');
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+    const rules = [
+        { title: 'Odd Numbers', rule: (num) => num % 2 !== 0 },
+        { title: 'Even Numbers', rule: (num) => num % 2 === 0 },
+        { title: 'Prime Numbers', rule: isPrime },
+        { title: 'Fibonacci Numbers', rule: isFibonacci },
+    ];
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+    const ruleMap = {
+        'Odd Numbers': (num) => num % 2 !== 0,
+        'Even Numbers': (num) => num % 2 === 0,
+        'Prime Numbers': isPrime,
+        'Fibonacci Numbers': isFibonacci,
+    };
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    const numbers = generateNumbers(ruleMap[selectedRule]);
+
+    return (
+        <View style={styles.container}>
+            <Picker
+                selectedValue={selectedRule}
+                onValueChange={(itemValue) => setSelectedRule(itemValue)}
+                style={styles.picker}
+            >
+                {rules.map((rule) => (
+                    <Picker.Item key={rule.title} label={rule.title} value={rule.title} />
+                ))}
+            </Picker>
+            <FlatList
+                data={numbers}
+                keyExtractor={(item) => item.value.toString()}
+                numColumns={10}
+                renderItem={({ item }) => (
+                    <TouchableOpacity style={[styles.item, item.highlight && styles.highlightedItem]}>
+                        <Text style={styles.itemText}>{item.value}</Text>
+                    </TouchableOpacity>
+                )}
+            />
         </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
+    );
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        paddingTop: 50,
+        alignItems: 'center',
+    },
+    picker: {
+        height: 50,
+        width: 200,
+        marginBottom: 20,
+    },
+    item: {
+        flex: 1,
+        margin: 5,
+        padding: 10,
+        backgroundColor: '#f9c2ff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 4,
+        minWidth: 30,
+    },
+    highlightedItem: {
+        backgroundColor: '#ff4081',
+    },
+    itemText: {
+        fontSize: 16,
+    },
 });
 
 export default App;
