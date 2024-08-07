@@ -3,14 +3,13 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import { Picker } from '@react-native-picker/picker';
 
 const isPrime = (num) => {
-    if (num < 2) 
-        return false;
+    if (num < 2) return false;
     for (let i = 2; i <= Math.sqrt(num); i++) {
-        if (num % i === 0) 
-            return false;
+        if (num % i === 0) return false;
     }
     return true;
 };
+
 
 const isFibonacci = (num) => {
     const isPerfectSquare = (x) => {
@@ -19,6 +18,7 @@ const isFibonacci = (num) => {
     };
     return isPerfectSquare(5 * num * num + 4) || isPerfectSquare(5 * num * num - 4);
 };
+
 
 const generateNumbers = (rule) => {
     return Array.from({ length: 100 }, (_, i) => {
@@ -33,6 +33,7 @@ const generateNumbers = (rule) => {
 const App = () => {
     const [selectedRule, setSelectedRule] = useState('Odd Numbers');
 
+    
     const rules = [
         { title: 'Odd Numbers', rule: (num) => num % 2 !== 0 },
         { title: 'Even Numbers', rule: (num) => num % 2 === 0 },
@@ -40,6 +41,7 @@ const App = () => {
         { title: 'Fibonacci Numbers', rule: isFibonacci },
     ];
 
+   
     const ruleMap = {
         'Odd Numbers': (num) => num % 2 !== 0,
         'Even Numbers': (num) => num % 2 === 0,
@@ -87,14 +89,14 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     item: {
-        flex: 1,
+        width: 30, 
+        height: 30, 
         margin: 5,
-        padding: 10,
+        padding: 5,
         backgroundColor: '#f9c2ff',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 4,
-        minWidth: 30,
     },
     highlightedItem: {
         backgroundColor: '#ff4081',
